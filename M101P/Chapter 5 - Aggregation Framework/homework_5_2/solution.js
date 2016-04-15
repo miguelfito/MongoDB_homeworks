@@ -12,3 +12,21 @@ db.intermedia.update({}, {$set: {pw: 1}}, {multi: 1})
 // Once we have it in an isolated collection, we could get the Average with $avg:
 db.intermedia.aggregate({$group:{"_id": "$pw", "PopulationAvg": {$avg: "$pop"}}})
 
+
+
+
+// ANOTHER VIEW
+db.zips.aggregate([ 
+	{ $match: // Get those cities in CA $or NY with more than 25000 people
+		{ 
+			$or: [{ state: "CA" }, { state: "NY" }], 
+			pop: {$gte: 25000}
+		} 
+	} , 
+	{$group: // Then, $group by a non-existing key (gets all)...
+		{ 
+			"_id": "$noKeyNeeded", 
+			PopulationAvg: { $avg: "$pop"} // And get the average
+		} 
+	} 
+])
